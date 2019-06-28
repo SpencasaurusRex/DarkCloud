@@ -74,10 +74,36 @@ public class OrbitCamera : MonoBehaviour
         if (InvertY) rotationInput.y *= -1;
 
         // Process rotation
-        // Horizontal
+        Horizontal(rotationInput);
+        Vertical(rotationInput, gamePad);
+        Position();
+        Rotation();
+
+        // Find smoothed follow position
+        Position();
+
+        // Find and apply smoothed rotation
+        Rotation();
+
+        // Find target position given follow position and rotation
+        Vector3 targetPosition = currentFollowPosition - ((Transform.rotation * Vector3.forward) * currentDistance);
+
+        // Offset
+        targetPosition += Transform.right * Offset.x;
+        targetPosition += Transform.up * Offset.y;
+
+        // Apply transformation
+        Transform.position = targetPosition;
+    }
+
+    void Horizontal(Vector3 rotationInput)
+    {
         Quaternion rotationFromInput = Quaternion.Euler(FollowTransform.up * (rotationInput.x * RotationSpeed));
         PlanarDirection = rotationFromInput * PlanarDirection;
-        // Vertical
+    }
+
+    void Vertical(Vector3 rotationInput, bool gamePad)
+    {
         float rotationModifierUp = 1f;
         float rotationModifierDown = 1f;
         if (gamePad)
@@ -95,28 +121,20 @@ public class OrbitCamera : MonoBehaviour
         float rotationModifier = rotationInput.y < 0 ? rotationModifierUp : rotationModifierDown;
         targetVerticalAngle -= rotationInput.y * RotationSpeed * rotationModifier;
         targetVerticalAngle = Mathf.Clamp(targetVerticalAngle, MinVerticalAngle, MaxVerticalAngle);
+    }
 
-        // Find smoothed follow position
+    void Position()
+    {
         currentFollowPosition = Vector3.Lerp(currentFollowPosition, FollowTransform.position,
             1 - Mathf.Exp(-FollowingSharpness * Time.deltaTime));
+    }
 
-        // Find smoothed rotation
+    void Rotation()
+    {
         Quaternion planarRotation = Quaternion.LookRotation(PlanarDirection, FollowTransform.up);
         Quaternion verticalRotation = Quaternion.Euler(targetVerticalAngle, 0, 0);
         Quaternion targetRotation = Quaternion.Slerp(Transform.rotation, planarRotation * verticalRotation,
             1 - Mathf.Exp(-RotationSharpness * Time.deltaTime));
-
-        // Apply rotation
         Transform.rotation = targetRotation;
-
-        // Find target position given follow position and rotation
-        Vector3 targetPosition = currentFollowPosition - ((targetRotation * Vector3.forward) * currentDistance);
-
-        // Offset
-        targetPosition += Transform.right * Offset.x;
-        targetPosition += Transform.up * Offset.y;
-
-        // Apply transformation
-        Transform.position = targetPosition;
     }
 }
