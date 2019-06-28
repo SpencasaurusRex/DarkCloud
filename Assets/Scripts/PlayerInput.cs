@@ -63,14 +63,12 @@ public class PlayerInput : MonoBehaviour
         {
             float x = Input.GetAxisRaw(GamepadCameraX);
             float y = Input.GetAxisRaw(GamepadCameraY);
-            print($"GP: {x},{y}");
             Camera.ProcessInput(new Vector3(x, y, 0), true);
         }
         else
         {
             float x = Input.GetAxisRaw(MouseCameraX);
             float y = Input.GetAxisRaw(MouseCameraY);
-            print($"KB/M: {x},{y}");
             Camera.ProcessInput(new Vector3(x, y, 0), false);
         }
     }

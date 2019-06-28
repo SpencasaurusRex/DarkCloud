@@ -21,6 +21,7 @@ public class OrbitCamera : MonoBehaviour
     [Range(-45f, 70f)] public float MaxVerticalAngle = 70f;
     public float RotationSpeed = 1f;
     public float RotationSharpness = 10000f;
+    public float SmoothingMargin = 25f;
 
     [Header("Obstruction")] public float ObstructionCheckRadius = 0.2f;
     public LayerMask ObstructionLayers = -1;
@@ -77,13 +78,21 @@ public class OrbitCamera : MonoBehaviour
         Quaternion rotationFromInput = Quaternion.Euler(FollowTransform.up * (rotationInput.x * RotationSpeed));
         PlanarDirection = rotationFromInput * PlanarDirection;
         // Vertical
-        float rotationModifier = 1f;
+        float rotationModifierUp = 1f;
+        float rotationModifierDown = 1f;
         if (gamePad)
         {
             // On a GamePad, smooth edges of vertical rotation
-            if (MaxVerticalAngle - targetVerticalAngle < 20) rotationModifier = .5f;
-            if (MinVerticalAngle - targetVerticalAngle < -20) rotationModifier = .5f;
+            float deltaMax = MaxVerticalAngle - targetVerticalAngle;
+            if (deltaMax < SmoothingMargin) rotationModifierUp = deltaMax / SmoothingMargin + .1f;
+            rotationModifierUp = Mathf.Clamp01(rotationModifierUp);
+
+            float deltaMin = targetVerticalAngle - MinVerticalAngle;
+            if (deltaMin < SmoothingMargin) rotationModifierDown = deltaMin / SmoothingMargin + .1f;
+            rotationModifierDown = Mathf.Clamp01(rotationModifierDown);
         }
+
+        float rotationModifier = rotationInput.y < 0 ? rotationModifierUp : rotationModifierDown;
         targetVerticalAngle -= rotationInput.y * RotationSpeed * rotationModifier;
         targetVerticalAngle = Mathf.Clamp(targetVerticalAngle, MinVerticalAngle, MaxVerticalAngle);
 
