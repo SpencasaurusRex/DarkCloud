@@ -35,3 +35,7 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+# Dark Cloud Specific
+Assets/KinematicCharacterController/
+Assets/KinematicCharacterController.meta
