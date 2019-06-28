@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using KinematicCharacterController.Examples;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -29,7 +30,7 @@ public class PlayerInput : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         Camera.SetFollowTransform(transform);
-        //Camera.IgnoredColliders = Character.GetComponentsInChildren<Collider>().ToList();
+        Camera.IgnoredColliders = Character.GetComponentsInChildren<Collider>().ToList();
     }
 
     void Update()
@@ -43,17 +44,17 @@ public class PlayerInput : MonoBehaviour
         // Mouse click
         if (Input.GetMouseButtonDown((int) MouseButton.LeftMouse) || Input.GetMouseButtonDown((int) MouseButton.RightMouse))
         {
-            InputMethod = InputMethod.KeyboardMouse;
+            TransitionInputMethod(InputMethod.KeyboardMouse);
         }
         // Escape key
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
-            InputMethod = InputMethod.KeyboardMouse;
+            TransitionInputMethod(InputMethod.KeyboardMouse);
         }
         // GamePad Button press
         else if (Input.GetButtonDown(GamepadAnyButton))
         {
-            InputMethod = InputMethod.GamePad;
+            TransitionInputMethod(InputMethod.GamePad);
         }
     }
 
@@ -71,6 +72,18 @@ public class PlayerInput : MonoBehaviour
             float y = Input.GetAxisRaw(MouseCameraY);
             Camera.ProcessInput(new Vector3(x, y, 0), false);
         }
+    }
+
+    void CharacterInput()
+    {
+
+    }
+
+    void TransitionInputMethod(InputMethod inputMethod)
+    {
+        if (InputMethod == inputMethod) return;
+        InputMethod = inputMethod;
+        Camera.TransitionInputMethod(inputMethod);
     }
 }
 

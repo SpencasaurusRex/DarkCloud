@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.ExceptionServices;
 using UnityEngine;
 
 public class OrbitCamera : MonoBehaviour
@@ -21,6 +23,8 @@ public class OrbitCamera : MonoBehaviour
     [Range(-45f, 70f)] public float MaxVerticalAngle = 70f;
     public float RotationSpeed = 1f;
     public float RotationSharpness = 10000f;
+    public float GamepadRotationSharpness = 5f;
+    public float MouseRotationSharpness = 10000f;
     public float SmoothingMargin = 25f;
 
     [Header("Obstruction")] public float ObstructionCheckRadius = 0.2f;
@@ -85,6 +89,9 @@ public class OrbitCamera : MonoBehaviour
         // Find and apply smoothed rotation
         Rotation();
 
+        // Handle obstructions/distance
+        HandleObstructions();
+
         // Find target position given follow position and rotation
         Vector3 targetPosition = currentFollowPosition - ((Transform.rotation * Vector3.forward) * currentDistance);
 
@@ -136,5 +143,47 @@ public class OrbitCamera : MonoBehaviour
         Quaternion targetRotation = Quaternion.Slerp(Transform.rotation, planarRotation * verticalRotation,
             1 - Mathf.Exp(-RotationSharpness * Time.deltaTime));
         Transform.rotation = targetRotation;
+    }
+
+    void HandleObstructions()
+    {
+        RaycastHit closestHit = new RaycastHit {distance = Mathf.Infinity};
+        obstructionCount = Physics.SphereCastNonAlloc(currentFollowPosition, ObstructionCheckRadius, -Transform.forward,
+            obstructions, TargetDistance, ObstructionLayers, QueryTriggerInteraction.Ignore);
+
+        print(obstructionCount);
+        for (int i = 0; i < obstructionCount; i++)
+        {
+            bool ignore = IgnoredColliders.Any(t => t == obstructions[i].collider);
+            if (!ignore && obstructions[i].distance < closestHit.distance && obstructions[i].distance > 0)
+            {
+                closestHit = obstructions[i];
+            }
+
+        }
+        if (closestHit.distance < Mathf.Infinity)
+        {
+            distanceIsObstructed = true;
+            currentDistance = Mathf.Lerp(currentDistance, closestHit.distance,
+                1 - Mathf.Exp(-ObstructionSharpness * Time.deltaTime));
+        }
+        else
+        {
+            distanceIsObstructed = true;
+            currentDistance = Mathf.Lerp(currentDistance, TargetDistance,
+                1 - Mathf.Exp(-DistanceMovementSharpness * Time.deltaTime));
+        }
+    }
+
+    public void TransitionInputMethod(InputMethod inputMethod)
+    {
+        if (inputMethod == InputMethod.GamePad)
+        {
+            RotationSharpness = GamepadRotationSharpness;
+        }
+        else
+        {
+            RotationSharpness = MouseRotationSharpness;
+        }
     }
 }

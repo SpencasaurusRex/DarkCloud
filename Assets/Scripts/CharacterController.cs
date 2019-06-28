@@ -5,6 +5,16 @@ public class CharacterController : MonoBehaviour, ICharacterController
 {
     public KinematicCharacterMotor Motor;
 
+    public struct PlayerCharacterInputs
+    {
+        public float MoveAxisForward;
+        public float MoveAxisRight;
+        public Quaternion CameraRotation;
+        public bool JumpDown;
+        public bool CrouchDown;
+        public bool CrouchUp;
+    }
+
     void Start()
     {
         Motor.CharacterController = this;
