@@ -150,8 +150,7 @@ public class OrbitCamera : MonoBehaviour
         RaycastHit closestHit = new RaycastHit {distance = Mathf.Infinity};
         obstructionCount = Physics.SphereCastNonAlloc(currentFollowPosition, ObstructionCheckRadius, -Transform.forward,
             obstructions, TargetDistance, ObstructionLayers, QueryTriggerInteraction.Ignore);
-
-        print(obstructionCount);
+        
         for (int i = 0; i < obstructionCount; i++)
         {
             bool ignore = IgnoredColliders.Any(t => t == obstructions[i].collider);

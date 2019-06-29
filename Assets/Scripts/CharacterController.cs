@@ -4,6 +4,7 @@ using UnityEngine;
 public class CharacterController : MonoBehaviour, ICharacterController
 {
     public KinematicCharacterMotor Motor;
+    public Animator Animator;
 
     public struct PlayerCharacterInputs
     {
@@ -27,7 +28,7 @@ public class CharacterController : MonoBehaviour, ICharacterController
 
     public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
     {
-        
+        currentRotation.eulerAngles = currentRotation.eulerAngles + new Vector3(0, deltaTime * 100, 0);
     }
 
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
