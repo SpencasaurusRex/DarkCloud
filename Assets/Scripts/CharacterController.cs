@@ -6,6 +6,9 @@ public class CharacterController : MonoBehaviour, ICharacterController
     public KinematicCharacterMotor Motor;
     public Animator Animator;
 
+    public float MoveSpeed = 3;
+    public Vector3 Gravity = new Vector3(0, -15f, 0);
+
     public struct PlayerCharacterInputs
     {
         public float MoveAxisForward;
@@ -15,6 +18,8 @@ public class CharacterController : MonoBehaviour, ICharacterController
         public bool CrouchDown;
         public bool CrouchUp;
     }
+
+    Vector3 moveInput;
 
     void Start()
     {
@@ -26,14 +31,34 @@ public class CharacterController : MonoBehaviour, ICharacterController
         
     }
 
+    public void SetInputs(ref PlayerCharacterInputs inputs)
+    {
+        Vector3 clampedInputMovement = Vector3.ClampMagnitude(new Vector3(inputs.MoveAxisRight, 0, inputs.MoveAxisForward),1f);
+        Vector3 cameraDirection = Vector3.ProjectOnPlane(inputs.CameraRotation * Vector3.forward, Motor.CharacterUp).normalized;
+        Quaternion cameraRotation = Quaternion.LookRotation(cameraDirection, Motor.CharacterUp);
+
+        moveInput = cameraRotation * clampedInputMovement;
+    }
+
     public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
     {
-        currentRotation.eulerAngles = currentRotation.eulerAngles + new Vector3(0, deltaTime * 50, 0);
+        // Face towards movement TODO smoothing
+        if (Mathf.Approximately(Motor.BaseVelocity.sqrMagnitude, 0)) return;
+
+        var velocityDirection = Vector3.ProjectOnPlane(Motor.BaseVelocity, Motor.CharacterUp);
+        if (Mathf.Approximately(velocityDirection.sqrMagnitude, 0)) return;
+
+        currentRotation = Quaternion.LookRotation(velocityDirection, Motor.CharacterUp);
     }
 
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
-        
+        currentVelocity.x = currentVelocity.z = 0;
+        currentVelocity += moveInput * MoveSpeed;
+        //if (!Motor.GroundingStatus.IsStableOnGround)
+        {
+            currentVelocity += Gravity * Time.deltaTime;
+        }
     }
 
     public void BeforeCharacterUpdate(float deltaTime)

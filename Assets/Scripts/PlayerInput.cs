@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using KinematicCharacterController.Examples;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
@@ -9,6 +7,9 @@ public class PlayerInput : MonoBehaviour
 {
     public OrbitCamera Camera;
     public CharacterController Character;
+    public Transform CameraFollowPoint;
+
+    [HideInInspector]
     public InputMethod InputMethod = InputMethod.None;
 
     // Specific keys/buttons
@@ -22,21 +23,22 @@ public class PlayerInput : MonoBehaviour
     const string GamepadCameraY = "Gamepad Camera Y";
 
     // Movement controls
-    const string Horizontal = "X";
-    const string Vertical = "Y";
+    const string MoveX = "X";
+    const string MoveY = "Y";
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-
-        Camera.SetFollowTransform(transform);
+        
+        Camera.SetFollowTransform(CameraFollowPoint);
         Camera.IgnoredColliders = Character.GetComponentsInChildren<Collider>().ToList();
     }
 
     void Update()
     {
         DetermineInputMethod();
-        HandleCameraInput();
+        CameraInput();
+        CharacterInput();
     }
 
     void DetermineInputMethod()
@@ -58,7 +60,7 @@ public class PlayerInput : MonoBehaviour
         }
     }
 
-    void HandleCameraInput()
+    void CameraInput()
     {
         if (InputMethod == InputMethod.GamePad)
         {
@@ -76,7 +78,17 @@ public class PlayerInput : MonoBehaviour
 
     void CharacterInput()
     {
+        var inputs = new CharacterController.PlayerCharacterInputs
+        {
+            MoveAxisForward = Input.GetAxisRaw(MoveY),
+            MoveAxisRight = Input.GetAxisRaw(MoveX),
+            CameraRotation = Camera.transform.rotation,
+            JumpDown = false,
+            CrouchDown = false,
+            CrouchUp = false
+        };
 
+        Character.SetInputs(ref inputs);
     }
 
     void TransitionInputMethod(InputMethod inputMethod)
