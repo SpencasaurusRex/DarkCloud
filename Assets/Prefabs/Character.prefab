@@ -131,6 +131,8 @@ MonoBehaviour:
   Animator: {fileID: 7637799882727130147}
   MoveSpeed: 3
   Gravity: {x: 0, y: -30, z: 0}
+  RotationSharpness: 5
+  AnimationSharpness: 1
 --- !u!1001 &4759844703010390595
 PrefabInstance:
   m_ObjectHideFlags: 0

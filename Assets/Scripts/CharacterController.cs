@@ -6,8 +6,12 @@ public class CharacterController : MonoBehaviour, ICharacterController
     public KinematicCharacterMotor Motor;
     public Animator Animator;
 
-    public float MoveSpeed = 3;
+    public float MoveSpeed = 3f;
     public Vector3 Gravity = new Vector3(0, -15f, 0);
+    public float RotationSharpness = 5f;
+    public float AnimationSharpness = 1f;
+
+    float speedPercent;
 
     public struct PlayerCharacterInputs
     {
@@ -48,13 +52,20 @@ public class CharacterController : MonoBehaviour, ICharacterController
         var velocityDirection = Vector3.ProjectOnPlane(Motor.BaseVelocity, Motor.CharacterUp);
         if (Mathf.Approximately(velocityDirection.sqrMagnitude, 0)) return;
 
-        currentRotation = Quaternion.LookRotation(velocityDirection, Motor.CharacterUp);
+        Quaternion targetRotation = Quaternion.LookRotation(velocityDirection, Motor.CharacterUp);
+        currentRotation =
+            Quaternion.Slerp(currentRotation, targetRotation, 1f - Mathf.Exp(-RotationSharpness * deltaTime));
     }
 
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
         currentVelocity.x = currentVelocity.z = 0;
         currentVelocity += moveInput * MoveSpeed;
+
+        // Running animation
+        speedPercent = Mathf.Lerp(speedPercent, moveInput.magnitude * .8f, Time.deltaTime * AnimationSharpness);
+        Animator.SetFloat("speedPercent", speedPercent);
+
         //if (!Motor.GroundingStatus.IsStableOnGround)
         {
             currentVelocity += Gravity * Time.deltaTime;

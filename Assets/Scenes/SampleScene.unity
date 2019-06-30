@@ -274,7 +274,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 406313205, guid: c75e91cf060bbf04e89204fa400606df, type: 3}
       propertyPath: FollowingSharpness
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c75e91cf060bbf04e89204fa400606df, type: 3}
@@ -5107,6 +5107,16 @@ PrefabInstance:
       propertyPath: Gravity.y
       value: -15
       objectReference: {fileID: 0}
+    - target: {fileID: 8375786952069232395, guid: 3288cb42373e05040a1a804a3c496e44,
+        type: 3}
+      propertyPath: RotationSharpness
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8375786952069232395, guid: 3288cb42373e05040a1a804a3c496e44,
+        type: 3}
+      propertyPath: AnimationSharpness
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 8375786952069232396, guid: 3288cb42373e05040a1a804a3c496e44,
         type: 3}
       propertyPath: m_Name
@@ -5199,7 +5209,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 671783670, guid: 3288cb42373e05040a1a804a3c496e44, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.189
+      value: 0.0436
       objectReference: {fileID: 0}
     - target: {fileID: 671783670, guid: 3288cb42373e05040a1a804a3c496e44, type: 3}
       propertyPath: m_LocalPosition.y
