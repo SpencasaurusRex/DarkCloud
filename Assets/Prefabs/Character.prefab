@@ -136,6 +136,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8375786953341810082}
     m_Modifications:
+    - target: {fileID: -6057140222963153312, guid: 67790fa2707853f4bb48ad4f4e0cd28f,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 275b30dba1a3ee849927e0162fc38372, type: 2}
+    - target: {fileID: -6057140222963153312, guid: 67790fa2707853f4bb48ad4f4e0cd28f,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 67790fa2707853f4bb48ad4f4e0cd28f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -195,16 +205,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Character
-      objectReference: {fileID: 0}
-    - target: {fileID: -6057140222963153312, guid: 67790fa2707853f4bb48ad4f4e0cd28f,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 275b30dba1a3ee849927e0162fc38372, type: 2}
-    - target: {fileID: -6057140222963153312, guid: 67790fa2707853f4bb48ad4f4e0cd28f,
-        type: 3}
-      propertyPath: m_ApplyRootMotion
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5622803279670643787, guid: 67790fa2707853f4bb48ad4f4e0cd28f,
         type: 3}

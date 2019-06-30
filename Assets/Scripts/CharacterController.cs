@@ -28,7 +28,7 @@ public class CharacterController : MonoBehaviour, ICharacterController
 
     public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
     {
-        currentRotation.eulerAngles = currentRotation.eulerAngles + new Vector3(0, deltaTime * 100, 0);
+        currentRotation.eulerAngles = currentRotation.eulerAngles + new Vector3(0, deltaTime * 50, 0);
     }
 
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
