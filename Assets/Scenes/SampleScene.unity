@@ -5117,6 +5117,11 @@ PrefabInstance:
       propertyPath: AnimationSharpness
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 8375786952069232395, guid: 3288cb42373e05040a1a804a3c496e44,
+        type: 3}
+      propertyPath: MoveSpeed
+      value: 3.75
+      objectReference: {fileID: 0}
     - target: {fileID: 8375786952069232396, guid: 3288cb42373e05040a1a804a3c496e44,
         type: 3}
       propertyPath: m_Name

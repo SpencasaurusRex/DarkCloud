@@ -63,7 +63,7 @@ public class CharacterController : MonoBehaviour, ICharacterController
         currentVelocity += moveInput * MoveSpeed;
 
         // Running animation
-        speedPercent = Mathf.Lerp(speedPercent, moveInput.magnitude * .8f, Time.deltaTime * AnimationSharpness);
+        speedPercent = Mathf.Lerp(speedPercent, moveInput.magnitude * .9f, Time.deltaTime * AnimationSharpness);
         Animator.SetFloat("speedPercent", speedPercent);
 
         //if (!Motor.GroundingStatus.IsStableOnGround)
