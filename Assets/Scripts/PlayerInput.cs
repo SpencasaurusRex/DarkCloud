@@ -10,7 +10,7 @@ public class PlayerInput : MonoBehaviour
     public Transform CameraFollowPoint;
 
     [HideInInspector]
-    public InputMethod InputMethod = InputMethod.None;
+    public InputMethod InputMethod = InputMethod.KeyboardMouse;
 
     // Specific keys/buttons
     const string GamepadAnyButton = "Gamepad Any Button";
@@ -29,7 +29,7 @@ public class PlayerInput : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        
+
         Camera.SetFollowTransform(CameraFollowPoint);
         Camera.IgnoredColliders = Character.GetComponentsInChildren<Collider>().ToList();
     }
