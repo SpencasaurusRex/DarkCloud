@@ -74,6 +74,7 @@ public class CharacterController : MonoBehaviour, ICharacterController
 
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
+        DebugDrawVectors.Clear();
 
         // Running animation
         //speedPercent = Mathf.Lerp(speedPercent, moveInput.magnitude * .8f, Time.deltaTime * AnimationSharpness);
@@ -86,8 +87,6 @@ public class CharacterController : MonoBehaviour, ICharacterController
         Vector3 targetVelocity = Vector3.zero;
         if (Motor.GroundingStatus.IsStableOnGround) // TODO: Or if unstable sliding vector is less than 55 degrees to prevent slipping off edges
         {
-            currentVelocity.x = currentVelocity.z = 0;
-            currentVelocity += moveInput * MoveSpeed;
             // Reorient velocity on new slopes
             currentVelocity = Motor.GetDirectionTangentToSurface(currentVelocity, Motor.GroundingStatus.GroundNormal) * currentVelocity.magnitude;
 
@@ -119,12 +118,15 @@ public class CharacterController : MonoBehaviour, ICharacterController
 
     void UnstableGround(ref Vector3 currentVelocity, float deltaTime)
     {
+        // Reorient velocity on new slopes
+        currentVelocity = Motor.GetDirectionTangentToSurface(currentVelocity, Motor.GroundingStatus.GroundNormal) * currentVelocity.magnitude;
+
         Vector3 slidingVector = Vector3.Cross(Motor.GroundingStatus.GroundNormal, Vector3.Cross(Motor.GroundingStatus.GroundNormal, Motor.CharacterUp)).normalized;
-        //if (Math.Asin(-slidingVector.y) > MaxSlideAngle)
-        //{
-        //    // TODO: Fall
-        //    return;
-        //}
+        if (Mathf.Asin(-slidingVector.y) > MaxSlideAngle)
+        {
+            // TODO: Fall
+            return;
+        }
 
         Vector3 slidingVectorRight = Vector3.Cross(slidingVector, Motor.CharacterUp).normalized;
         Vector3 tangentInput = Vector3.Cross(Motor.GroundingStatus.GroundNormal, Vector3.Cross(moveInput, Motor.CharacterUp)).normalized * moveInput.magnitude;
@@ -133,8 +135,8 @@ public class CharacterController : MonoBehaviour, ICharacterController
         if (slideDownModifier > 0) slideDownModifier = 1 + slideDownModifier * SlideDownMultiplier.y;
         else slideDownModifier = 1 + slideDownModifier * SlideDownMultiplier.x;
 
-        float slideSideModifier = SlideLeftRightSpeed * Vector3.Dot(slidingVectorRight, tangentInput);
-        Vector3 targetVelocity = slidingVector * SlideDownSpeed * slideDownModifier + slidingVectorRight * slideSideModifier * -slidingVector.y;
+        float slideSideModifier = SlideLeftRightSpeed * Vector3.Dot(slidingVectorRight, tangentInput) * Mathf.Min(2.5f, 1 / -slidingVector.y);
+        Vector3 targetVelocity = slidingVector * SlideDownSpeed * slideDownModifier + slidingVectorRight * slideSideModifier * Mathf.Max(-slidingVector.y, .5f);
 
         currentVelocity = Vector3.Lerp(currentVelocity, targetVelocity, 1 - Mathf.Exp(-SlideSharpness * deltaTime));
 
@@ -186,7 +188,10 @@ public class CharacterController : MonoBehaviour, ICharacterController
     public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition,
         Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport)
     {
-        
+        if (hitCollider.CompareTag("Slide"))
+        {
+            hitStabilityReport.IsStable = false;
+        }
     }
 
     public void OnDiscreteCollisionDetected(Collider hitCollider)
@@ -207,8 +212,6 @@ public class CharacterController : MonoBehaviour, ICharacterController
             Gizmos.color = vectorSet.Item3;
             Gizmos.DrawLine(vectorSet.Item1, vectorSet.Item1 + vectorSet.Item2);
         }
-
-        DebugDrawVectors.Clear();
     }
     #endregion
 }
